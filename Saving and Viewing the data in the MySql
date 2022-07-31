@@ -1,0 +1,84 @@
+//This code is using ListView for viewing the database in the Visual Studio
+//Inputted data in the textboxes are shown in the ListView
+
+Imports MySql.Data.MySqlClient //This code is written above the public class. This code means the data are being save in the MySQL
+Public Class Form1
+//Declaring Variables in the Public Class
+    Dim CONNECT As MySqlConnection
+    Dim CONSTRING As String = "data source = localhost; user id = root; database = votingsystem_pacadalhin" //Votingsystem.. - name of the database
+    Dim CMD As MySqlCommand
+    Dim DA As MySqlDataAdapter
+    Dim DS As DataSet
+    Dim itemcoll(999) As String
+
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        Try
+ //Code wriiten in the Save Button
+            CONNECT = New MySqlConnection(CONSTRING)
+            CONNECT.Open()
+            Dim SQL As String = "Insert INTO voters (Student_Number, First_name, Last_name, Middle_name, Course, Year_Section, Email) values ('" & Studentnum.Text & "', '" & TextBox2.Text & "', '" & TextBox3.Text & "', '" & TextBox4.Text & "', '" & TextBox5.Text & "', '" & TextBox6.Text & "', '" & TextBox7.Text & "')"
+            CMD = New MySqlCommand(SQL, CONNECT)
+            Dim i As Integer = CMD.ExecuteNonQuery
+            If i <> 0 Then
+                MsgBox("Record Saved", vbInformation, "Admin")
+            Else
+                MsgBox("Record Not Saved", vbInformation, "Admin")
+            End If
+            Call LOADLV()
+            CONNECT.Close()
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+    End Sub
+
+/** This code is for the ListView.
+In declaring the name of the ListView (ex. LOADV() ), Public Sub must used.*/
+        Public Sub LOADLV()
+        Try
+            ListView1.Items.Clear()
+            CONNECT = New MySqlConnection(CONSTRING)
+            CONNECT.Open()
+            Dim SQL As String = "select * from voters"
+            CMD = New MySqlCommand(SQL, CONNECT)
+            DA = New MySqlDataAdapter(CMD)
+            DS = New DataSet
+            DA.Fill(DS, "Tables")
+            For r = 0 To DS.Tables(0).Rows.Count - 1
+                For c = 0 To DS.Tables(0).Columns.Count - 1
+                    itemcoll(c) = DS.Tables(0).Rows(r)(c).ToString
+                Next
+                Dim lvitm As New ListViewItem(itemcoll)
+                ListView1.Items.Add(lvitm)
+            Next
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+        CONNECT.Close()
+    End Sub
+   
+   
+   /** Code written in the ListView 
+   The code means that every inputted data in the textboxes are shown in the ListView */
+ 
+        Private Sub ListView1_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ListView1.SelectedIndexChanged
+        If ListView1.SelectedItems.Count > 0 Then
+            Studentnum.Text = ListView1.Items(ListView1.SelectedIndices(0)).SubItems(0).Text
+            TextBox2.Text = ListView1.Items(ListView1.SelectedIndices(0)).SubItems(1).Text
+            TextBox3.Text = ListView1.Items(ListView1.SelectedIndices(0)).SubItems(2).Text
+            TextBox4.Text = ListView1.Items(ListView1.SelectedIndices(0)).SubItems(3).Text
+            TextBox5.Text = ListView1.Items(ListView1.SelectedIndices(0)).SubItems(4).Text
+            TextBox6.Text = ListView1.Items(ListView1.SelectedIndices(0)).SubItems(5).Text
+            TextBox7.Text = ListView1.Items(ListView1.SelectedIndices(0)).SubItems(6).Text
+        End If
+    End Sub
+ 
+    //To make sure call the database. Example below
+    
+        Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Call LOADLV()
+    End Sub
+    
+    
+    
+    
+    
