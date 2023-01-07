@@ -7,7 +7,7 @@
     Dim CMD As MySqlCommand
   
 //Code for Save button
-  
+    Try
             CONNECT = New MySqlConnection(CONSTRING)
             CONNECT.Open()
             Dim SQL As String = "Insert INTO candidates (Candidate_Number, Full_name, Position, Partylist_number) values ( '" & TextBox1.Text & "', '" & TextBox2.Text & "', '" & ComboBox1.Text & "', '" & TextBox3.Text & "')"
@@ -22,4 +22,4 @@
             CONNECT.Close()
         Catch ex As Exception
             MsgBox(ex.Message)          
-  
+    End Try
